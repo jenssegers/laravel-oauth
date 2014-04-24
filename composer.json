@@ -1,0 +1,29 @@
+{
+    "name": "jenssegers/oauth",
+    "description": "Laravel OAuth library based on Lusitanian/PHPoAuthLib",
+    "keywords": ["oauth", "laravel"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jens Segers",
+            "homepage": "http://jenssegers.be"
+        },
+        {
+            "name": "Hannes Van De Vreken",
+            "homepage": "http://hannesv.be"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "lusitanian/oauth": "*"
+    },
+    "require-dev": {
+        "orchestra/testbench": "2.1.*",
+        "mockery/mockery": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Jenssegers\\OAuth\\": "src/"
+        }
+    }
+}
