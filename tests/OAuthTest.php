@@ -4,6 +4,11 @@ use Jenssegers\OAuth\OAuth;
 
 class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
+    public function tearDown()
+    {
+        Mockery::close();
+    }
+
     protected function getPackageProviders()
     {
         return array('Jenssegers\OAuth\OAuthServiceProvider');
@@ -16,9 +21,16 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         );
     }
 
+    public function testDefaultConfiguration()
+    {
+        $this->assertNotNull(Config::get('oauth::client'));
+        $this->assertNotNull(Config::get('oauth::consumers'));
+    }
+
     public function testSetsHttpClient()
     {
-        Config::shouldReceive('get')->with('oauth.client')->andReturn('CurlClient');
+        Config::shouldReceive('has')->with('oauth.consumers')->once()->andReturn(false);
+        Config::shouldReceive('get')->with('oauth::client')->once()->andReturn('CurlClient');
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('setHttpClient')->times(1);
@@ -27,7 +39,8 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testDefaultHttpClient()
     {
-        Config::shouldReceive('get')->with('oauth.client')->andReturn(null);
+        Config::shouldReceive('has')->with('oauth.consumers')->once()->andReturn(false);
+        Config::shouldReceive('get')->with('oauth::client')->once()->andReturn(null);
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $oauth = new OAuth($serviceFactory);
@@ -44,8 +57,8 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testReturnsConsumer()
     {
-        Config::set('oauth.consumers.Facebook.client_id', '123');
-        Config::set('oauth.consumers.Facebook.client_secret', 'ABC');
+        Config::set('oauth::consumers.Facebook.client_id', '123');
+        Config::set('oauth::consumers.Facebook.client_secret', 'ABC');
 
         $oauth = App::make('oauth');
         $consumer = $oauth->consumer('Facebook', 'foo.bar.com', array('email', 'publish_actions'));
@@ -59,8 +72,8 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testReturnsDefaultConsumer()
     {
-        Config::set('oauth.consumers.Facebook.client_id', '123');
-        Config::set('oauth.consumers.Facebook.client_secret', 'ABC');
+        Config::set('oauth::consumers.Facebook.client_id', '123');
+        Config::set('oauth::consumers.Facebook.client_secret', 'ABC');
 
         $oauth = App::make('oauth');
         $consumer = $oauth->consumer('Facebook');
@@ -80,6 +93,16 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
         $session->set('foo', 'bar');
         $this->assertEquals('bar', Session::get('foo'));
+    }
+
+    public function testCustomConfigurationFile()
+    {
+        Config::shouldReceive('has')->with('oauth.consumers')->once()->andReturn(true);
+        Config::shouldReceive('get')->with('oauth.client')->once()->andReturn('CurlClient');
+
+        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
+        $serviceFactory->shouldReceive('setHttpClient')->times(1);
+        $oauth = new OAuth($serviceFactory);
     }
 
 }

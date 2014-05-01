@@ -29,7 +29,11 @@ Add the OAuth alias to `app/config/app.php`:
 Configuration
 -------------
 
-Create an `oauth.php` config file containing your OAuth consumers:
+Publish the included configuration file:
+
+    php artisan config:publish jenssegers/oauth
+
+Add your consumer credentials to the configuration file:
 
     'consumers' => array(
 
@@ -40,6 +44,8 @@ Create an `oauth.php` config file containing your OAuth consumers:
         )
 
     )
+
+You can also create a `config/oauth.php` file that contains your configuration. When the library is loaded for the first time, it will check if that file is present or not.
 
 Usage
 -----

@@ -17,6 +17,13 @@ class OAuth
     protected $factory;
 
     /**
+     * The prefix used to get the configuration.
+     *
+     * @var string
+     */
+    protected $prefix = 'oauth::';
+
+    /**
      * Constructor.
      *
      * @param \OAuth\ServiceFactory $factory
@@ -26,8 +33,16 @@ class OAuth
         // Dependency injection
         $this->factory = $factory;
 
+        // Here we check what configuration file is used before we start. By default,
+        // we check the included package configuration file, but if a "custom"
+        // config/oauth.php file is detected, we will use that one.
+        if (Config::has('oauth.consumers'))
+        {
+            $this->prefix = 'oauth.';
+        }
+
         // Set custom HTTP client
-        if ($client = Config::get('oauth.client'))
+        if ($client = Config::get($this->prefix . 'client'))
         {
             $class = '\OAuth\Common\Http\Client\\' . $client;
             $this->factory->setHttpClient(new $class);
@@ -46,8 +61,8 @@ class OAuth
     {
         // Create credentials object
         $credentials = new Credentials(
-            Config::get("oauth.consumers.$service.client_id"),
-            Config::get("oauth.consumers.$service.client_secret"),
+            Config::get($this->prefix . "consumers.$service.client_id"),
+            Config::get($this->prefix . "consumers.$service.client_secret"),
             $url ?: URL::current()
         );
 
@@ -58,7 +73,7 @@ class OAuth
         // Get default scope
         if (is_null($scope))
         {
-            $scope = Config::get("oauth.consumers.$service.scope", array());
+            $scope = Config::get($this->prefix . "consumers.$service.scope", array());
         }
 
         return $this->factory->createService($service, $credentials, $storage, $scope);

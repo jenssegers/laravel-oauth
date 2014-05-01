@@ -2,6 +2,11 @@
 
 class ServiceProviderTest extends Orchestra\Testbench\TestCase {
 
+    public function tearDown()
+    {
+        Mockery::close();
+    }
+
     protected function getPackageProviders()
     {
         return array('Jenssegers\OAuth\OAuthServiceProvider');
