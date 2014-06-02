@@ -1,7 +1,7 @@
 Laravel OAuth
 =============
 
-[![Build Status](https://travis-ci.org/jenssegers/Laravel-OAuth.svg)](https://travis-ci.org/jenssegers/Laravel-OAuth) [![Coverage Status](https://coveralls.io/repos/jenssegers/Laravel-OAuth/badge.png)](https://coveralls.io/r/jenssegers/Laravel-OAuth)
+[![Build Status](http://img.shields.io/travis/jenssegers/laravel-oauth.svg)](https://travis-ci.org/jenssegers/laravel-oauth) [![Coverage Status](http://img.shields.io/coveralls/jenssegers/laravel-oauth.svg)](https://coveralls.io/r/jenssegers/laravel-oauth)
 
 A Laravel 4 OAuth library, using [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib). This library uses your Laravel configured session to store tokens.
 
