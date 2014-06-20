@@ -5,16 +5,22 @@ use \Config;
 use \URL;
 use \OAuth\ServiceFactory;
 use \OAuth\Common\Consumer\Credentials;
-use \OAuth\Common\Storage\SymfonySession;
+use \OAuth\Common\Storage\TokenStorageInterface;
 
 class OAuth
 {
     /**
-     * OAuth Service Factory
+     * OAuth Service Factory instance.
      *
      * @var \OAuth\ServiceFactory
      */
     protected $factory;
+
+    /**
+     * The storage instance.
+     * @var \OAuth\Common\Storage\TokenStorageInterface
+     */
+    protected $storage;
 
     /**
      * The prefix used to get the configuration.
@@ -28,10 +34,11 @@ class OAuth
      *
      * @param \OAuth\ServiceFactory $factory
      */
-    public function __construct(ServiceFactory $factory)
+    public function __construct(ServiceFactory $factory, TokenStorageInterface $storage)
     {
         // Dependency injection
         $this->factory = $factory;
+        $this->storage = $storage;
 
         // Here we check what configuration file is used before we start. By default,
         // we check the included package configuration file, but if a "custom"

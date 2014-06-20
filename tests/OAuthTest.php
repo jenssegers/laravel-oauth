@@ -1,6 +1,7 @@
 <?php
 
 use Jenssegers\OAuth\OAuth;
+use OAuth\Common\Storage\Memory;
 
 class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
@@ -34,7 +35,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('setHttpClient')->times(1);
-        $oauth = new OAuth($serviceFactory);
+        $oauth = new OAuth($serviceFactory, new Memory);
     }
 
     public function testDefaultHttpClient()
@@ -43,7 +44,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         Config::shouldReceive('get')->with('oauth::client')->once()->andReturn(null);
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
-        $oauth = new OAuth($serviceFactory);
+        $oauth = new OAuth($serviceFactory, new Memory);
     }
 
     public function testCreatesConsumer()
@@ -51,7 +52,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('createService');
 
-        $oauth = new OAuth($serviceFactory);
+        $oauth = new OAuth($serviceFactory, new Memory);
         $consumer = $oauth->consumer('Facebook');
     }
 
@@ -102,7 +103,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('setHttpClient')->times(1);
-        $oauth = new OAuth($serviceFactory);
+        $oauth = new OAuth($serviceFactory, new Memory);
     }
 
 }
