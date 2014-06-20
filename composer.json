@@ -19,7 +19,7 @@
         "lusitanian/oauth": "*"
     },
     "require-dev": {
-        "orchestra/testbench": "2.2.*-dev",
+        "orchestra/testbench": "2.2.*",
         "mockery/mockery": "*"
     },
     "autoload": {

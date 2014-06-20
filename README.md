@@ -29,6 +29,18 @@ Add the OAuth alias to `app/config/app.php`:
 Configuration
 -------------
 
+### Option 1: Services configuration file
+
+This package supports configuration through the services configuration file located in `app/config/services.php`:
+
+    'facebook' => array(
+        'client_id'     => '',
+        'client_secret' => '',
+        'scope'         => array(),
+    )
+
+### Option 2: The package configuration file
+
 Publish the included configuration file:
 
     php artisan config:publish jenssegers/oauth
@@ -37,7 +49,7 @@ Add your consumer credentials to the configuration file:
 
     'consumers' => array(
 
-        'Facebook' => array(
+        'facebook' => array(
             'client_id'     => '',
             'client_secret' => '',
             'scope'         => array(),
@@ -52,11 +64,11 @@ Usage
 
 Once you have added your credentials, you can create PHPoAuthLib service objects like this:
 
-    $oauth = OAuth::consumer('Facebook');
+    $oauth = OAuth::consumer('facebook');
 
 To override the default redirect url, or scope use:
 
-    $oauth = OAuth::consumer('Facebook', URL::to('url'), array('email', 'publish_actions'));
+    $oauth = OAuth::consumer('facebook', URL::to('url'), array('email', 'publish_actions'));
 
 For more information check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib).
 
@@ -65,7 +77,7 @@ Example
 
 Example usage for the Facebook API.
 
-    $oauth = OAuth::consumer('Facebook');
+    $oauth = OAuth::consumer('facebook');
 
     // Response from Facebook
     if ($code = Input::get('code'))

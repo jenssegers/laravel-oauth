@@ -27,7 +27,7 @@ class OAuth
      *
      * @var string
      */
-    protected $prefix = 'oauth::';
+    protected $prefix = 'services';
 
     /**
      * Constructor.
@@ -40,16 +40,20 @@ class OAuth
         $this->factory = $factory;
         $this->storage = $storage;
 
-        // Here we check what configuration file is used before we start. By default,
-        // we check the included package configuration file, but if a "custom"
-        // config/oauth.php file is detected, we will use that one.
-        if (Config::has('oauth.consumers'))
+        // Here we check what consumer configuration file is used before we start.
+        // By default, we will use the Laravel services file, but we will check
+        // other files such as the included package configuration file.
+        if (Config::get('oauth::consumers'))
         {
-            $this->prefix = 'oauth.';
+            $this->prefix = 'oauth::consumers';
+        }
+        else if (Config::get('oauth.consumers'))
+        {
+            $this->prefix = 'oauth.consumers';
         }
 
-        // Set custom HTTP client
-        if ($client = Config::get($this->prefix . 'client'))
+        // Set HTTP client
+        if ($client = Config::get('oauth.client') ?: Config::get('oauth::client'))
         {
             $class = '\OAuth\Common\Http\Client\\' . $client;
             $this->factory->setHttpClient(new $class);
@@ -66,24 +70,20 @@ class OAuth
      */
     public function consumer($service, $url = null, $scope = null)
     {
-        // Create credentials object
+        // Create credentials object.
         $credentials = new Credentials(
-            Config::get($this->prefix . "consumers.$service.client_id"),
-            Config::get($this->prefix . "consumers.$service.client_secret"),
+            Config::get($this->prefix . ".$service.client_id"),
+            Config::get($this->prefix . ".$service.client_secret"),
             $url ?: URL::current()
         );
 
-        // Create Laravel based session
-        $session = App::make('session')->driver();
-        $storage = new SymfonySession($session);
-
-        // Get default scope
+        // Get default scope.
         if (is_null($scope))
         {
-            $scope = Config::get($this->prefix . "consumers.$service.scope", array());
+            $scope = Config::get($this->prefix . ".$service.scope", array());
         }
 
-        return $this->factory->createService($service, $credentials, $storage, $scope);
+        return $this->factory->createService($service, $credentials, $this->storage, $scope);
     }
 
 }

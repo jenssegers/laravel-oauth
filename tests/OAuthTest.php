@@ -30,8 +30,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testSetsHttpClient()
     {
-        Config::shouldReceive('has')->with('oauth.consumers')->once()->andReturn(false);
-        Config::shouldReceive('get')->with('oauth::client')->once()->andReturn('CurlClient');
+        Config::set('oauth::client', 'CurlClient');
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('setHttpClient')->times(1);
@@ -40,29 +39,34 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testDefaultHttpClient()
     {
-        Config::shouldReceive('has')->with('oauth.consumers')->once()->andReturn(false);
-        Config::shouldReceive('get')->with('oauth::client')->once()->andReturn(null);
+        Config::set('oauth::client', '');
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
+        $serviceFactory->shouldReceive('setHttpClient')->times(0);
         $oauth = new OAuth($serviceFactory, new Memory);
     }
 
     public function testCreatesConsumer()
     {
+        Config::set('oauth::consumers.facebook.client_id', '123');
+        Config::set('oauth::consumers.facebook.client_secret', 'ABC');
+
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
-        $serviceFactory->shouldReceive('createService');
+        $serviceFactory->shouldReceive('createService')->passthru();
 
         $oauth = new OAuth($serviceFactory, new Memory);
-        $consumer = $oauth->consumer('Facebook');
+        $consumer = $oauth->consumer('facebook');
+        $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
     }
 
     public function testReturnsConsumer()
     {
-        Config::set('oauth::consumers.Facebook.client_id', '123');
-        Config::set('oauth::consumers.Facebook.client_secret', 'ABC');
+        Config::set('oauth::consumers.facebook.client_id', '123');
+        Config::set('oauth::consumers.facebook.client_secret', 'ABC');
+        Config::set('oauth::consumers.facebook.scope', array());
 
         $oauth = App::make('oauth');
-        $consumer = $oauth->consumer('Facebook', 'foo.bar.com', array('email', 'publish_actions'));
+        $consumer = $oauth->consumer('facebook', 'foo.bar.com', array('email', 'publish_actions'));
         $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
 
         $uri = (string) $consumer->getAuthorizationUri();
@@ -73,22 +77,24 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testReturnsDefaultConsumer()
     {
-        Config::set('oauth::consumers.Facebook.client_id', '123');
-        Config::set('oauth::consumers.Facebook.client_secret', 'ABC');
+        Config::set('oauth::consumers.facebook.client_id', '123');
+        Config::set('oauth::consumers.facebook.client_secret', 'ABC');
+        Config::set('oauth::consumers.facebook.scope', array('email', 'publish_actions'));
 
         $oauth = App::make('oauth');
-        $consumer = $oauth->consumer('Facebook');
+        $consumer = $oauth->consumer('facebook');
         $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
 
         $uri = (string) $consumer->getAuthorizationUri();
         $this->assertContains('client_id=123', $uri);
         $this->assertContains('redirect_uri=' . urlencode(URL::current()), $uri);
+        $this->assertContains('scope=email+publish_actions', $uri);
     }
 
     public function testSharesLaravelSession()
     {
         $oauth = App::make('oauth');
-        $consumer = $oauth->consumer('Facebook');
+        $consumer = $oauth->consumer('facebook');
         $storage = $consumer->getStorage();
         $session = $storage->getSession();
 
@@ -98,12 +104,39 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testCustomConfigurationFile()
     {
-        Config::shouldReceive('has')->with('oauth.consumers')->once()->andReturn(true);
-        Config::shouldReceive('get')->with('oauth.client')->once()->andReturn('CurlClient');
+        Config::set('oauth.client', 'CurlClient');
+        Config::set('oauth.consumers.facebook.client_id', '123');
+        Config::set('oauth.consumers.facebook.client_secret', 'ABC');
+        Config::set('oauth.consumers.facebook.scope', array('email', 'publish_actions'));
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('setHttpClient')->times(1);
         $oauth = new OAuth($serviceFactory, new Memory);
+
+        $oauth = App::make('oauth');
+        $consumer = $oauth->consumer('facebook');
+        $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
+
+        $uri = (string) $consumer->getAuthorizationUri();
+        $this->assertContains('client_id=123', $uri);
+        $this->assertContains('redirect_uri=' . urlencode(URL::current()), $uri);
+        $this->assertContains('scope=email+publish_actions', $uri);
+    }
+
+    public function testServicesConfiguration()
+    {
+        Config::set('services.facebook.client_id', '789');
+        Config::set('services.facebook.client_secret', 'XYZ');
+        Config::set('services.facebook.scope', array('email', 'publish_actions'));
+
+        $oauth = App::make('oauth');
+        $consumer = $oauth->consumer('facebook');
+        $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
+
+        $uri = (string) $consumer->getAuthorizationUri();
+        $this->assertContains('client_id=789', $uri);
+        $this->assertContains('redirect_uri=' . urlencode(URL::current()), $uri);
+        $this->assertContains('scope=email+publish_actions', $uri);
     }
 
 }
