@@ -59,6 +59,19 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
     }
 
+    public function testServiceAlias()
+    {
+        Config::set('oauth::consumers.facebook.client_id', '123');
+        Config::set('oauth::consumers.facebook.client_secret', 'ABC');
+
+        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
+        $serviceFactory->shouldReceive('createService')->passthru();
+
+        $oauth = new OAuth($serviceFactory, new Memory);
+        $consumer = $oauth->service('facebook');
+        $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
+    }
+
     public function testReturnsConsumer()
     {
         Config::set('oauth::consumers.facebook.client_id', '123');

@@ -86,4 +86,17 @@ class OAuth
         return $this->factory->createService($service, $credentials, $this->storage, $scope);
     }
 
+    /**
+     * Consumer alias method.
+     *
+     * @param  string $service
+     * @param  string $url
+     * @param  array  $scope
+     * @return \OAuth\Common\Service\AbstractService
+     */
+    public function service($service, $url = null, $scope = null)
+    {
+        return $this->consumer($service, $url, $scope);
+    }
+
 }
