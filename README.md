@@ -3,7 +3,7 @@ Laravel OAuth
 
 [![Build Status](http://img.shields.io/travis/jenssegers/laravel-oauth.svg)](https://travis-ci.org/jenssegers/laravel-oauth) [![Coverage Status](http://img.shields.io/coveralls/jenssegers/laravel-oauth.svg)](https://coveralls.io/r/jenssegers/laravel-oauth)
 
-A Laravel 4 OAuth library, using [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib). This library uses your Laravel configured session to store tokens.
+A Laravel 4 OAuth 1 and 2 library, using [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib). This library shares the Lravel session to store tokens and supports the services configuration file that was introduced in Laravel 4.2.
 
 *Original code by [hannesvdvreken](https://github.com/hannesvdvreken/laravel-oauth) (not maintained).*
 
@@ -57,7 +57,7 @@ Add your consumer credentials to the configuration file:
 
     )
 
-You can also create a `config/oauth.php` file that contains your configuration. When the library is loaded for the first time, it will check if that file is present or not.
+**Optional:** You can also create a `config/oauth.php` file for your consumer configuration. When the library is loaded for the first time, it will check if that file is present or not.
 
 Usage
 -----
@@ -70,7 +70,7 @@ To override the default redirect url, or scope use:
 
     $oauth = OAuth::consumer('facebook', URL::to('url'), array('email', 'publish_actions'));
 
-For more information check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib).
+Once you have the service object, you can use it to interact with the service's API. For more information check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib).
 
 Example
 -------
@@ -95,4 +95,4 @@ Example usage for the Facebook API.
         return Redirect::to($oauth->getAuthorizationUri());
     }
 
-For more examples check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib).
+For more examples check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib/tree/master/examples).
