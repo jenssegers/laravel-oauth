@@ -7,6 +7,43 @@ A Laravel 4 OAuth 1 and 2 library, using [PHPoAuthLib](https://github.com/Lusita
 
 *Original code by [hannesvdvreken](https://github.com/hannesvdvreken/laravel-oauth).*
 
+Supported services
+------------------
+
+- OAuth1
+    - BitBucket
+    - Etsy
+    - FitBit
+    - Flickr
+    - Scoop.it!
+    - Tumblr
+    - Twitter
+    - Xing
+    - Yahoo
+- OAuth2
+    - Amazon
+    - BitLy
+    - Box
+    - Dailymotion
+    - Dropbox
+    - Facebook
+    - Foursquare
+    - GitHub
+    - Google
+    - Harvest
+    - Heroku
+    - Instagram
+    - LinkedIn
+    - Mailchimp
+    - Microsoft
+    - PayPal
+    - Pocket
+    - Reddit
+    - RunKeeper
+    - SoundCloud
+    - Vkontakte
+    - Yammer
+
 Installation
 ------------
 
