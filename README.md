@@ -5,8 +5,6 @@ Laravel OAuth
 
 A Laravel 4 OAuth 1 and 2 library, using [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib). This library shares the Laravel session to store tokens and supports the services configuration file that was introduced in Laravel 4.2.
 
-*Original code by [hannesvdvreken](https://github.com/hannesvdvreken).*
-
 Supported services
 ------------------
 
