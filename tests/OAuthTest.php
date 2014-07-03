@@ -51,7 +51,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         Config::set('oauth::consumers.facebook.client_id', '123');
         Config::set('oauth::consumers.facebook.client_secret', 'ABC');
 
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
+        $serviceFactory = Mockery::mock('OAuth\ServiceFactory[createService]');
         $serviceFactory->shouldReceive('createService')->passthru();
 
         $oauth = new OAuth($serviceFactory, new Memory);
@@ -64,7 +64,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         Config::set('oauth::consumers.facebook.client_id', '123');
         Config::set('oauth::consumers.facebook.client_secret', 'ABC');
 
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
+        $serviceFactory = Mockery::mock('OAuth\ServiceFactory[createService]');
         $serviceFactory->shouldReceive('createService')->passthru();
 
         $oauth = new OAuth($serviceFactory, new Memory);
