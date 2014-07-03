@@ -112,14 +112,14 @@ Example
 
 Example usage for the Facebook API.
 
-    $oauth = OAuth::consumer('facebook');
+    $facebook = OAuth::consumer('facebook');
 
     // Response from Facebook
     if ($code = Input::get('code'))
     {
-        $token = $oauth->requestAccessToken($code);
+        $token = $facebook->requestAccessToken($code);
 
-        $result = json_decode($oauth->request('/me'), true);
+        $result = json_decode($facebook->request('/me'), true);
 
         echo 'Your unique facebook user id is: ' . $result['id'] . ' and your name is ' . $result['name'];
     }
@@ -127,7 +127,7 @@ Example usage for the Facebook API.
     // Redirect to login
     else
     {
-        return Redirect::to($oauth->getAuthorizationUri());
+        return Redirect::away((string) $oauth->getAuthorizationUri());
     }
 
 For more examples check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib/tree/master/examples).
