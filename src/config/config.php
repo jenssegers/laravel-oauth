@@ -21,7 +21,7 @@ return array(
     |
     | Example:
     |
-    |   'Facebook' => array(
+    |   'facebook' => array(
     |       'client_id'     => 'your-client-id',
     |       'client_secret' => 'your-client-secret',
     |       'scope'         => array(),

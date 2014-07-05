@@ -37,6 +37,18 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         $oauth = new OAuth($serviceFactory, new Memory);
     }
 
+    public function testMagicCalls()
+    {
+        Config::set('oauth::client', '');
+
+        $client = new \OAuth\Common\Http\Client\CurlClient;
+        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
+        $serviceFactory->shouldReceive('setHttpClient')->with($client)->times(1);
+
+        $oauth = new OAuth($serviceFactory, new Memory);
+        $oauth->setHttpClient($client);
+    }
+
     public function testDefaultHttpClient()
     {
         Config::set('oauth::client', '');

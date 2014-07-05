@@ -99,4 +99,16 @@ class OAuth
         return $this->consumer($service, $url, $scope);
     }
 
+    /**
+     * Handle dynamic method calls.
+     *
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return mixed
+     */
+    public function __call($method, $parameters)
+    {
+        return call_user_func_array(array($this->factory, $method), $parameters);
+    }
+
 }
