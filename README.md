@@ -127,7 +127,7 @@ Example usage for the Facebook API.
     // Redirect to login
     else
     {
-        return Redirect::away((string) $oauth->getAuthorizationUri());
+        return Redirect::away((string) $facebook->getAuthorizationUri());
     }
 
 For more examples check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib/tree/master/examples).
