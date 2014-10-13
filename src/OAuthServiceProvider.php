@@ -1,8 +1,8 @@
 <?php namespace Jenssegers\OAuth;
 
-use \Illuminate\Support\ServiceProvider;
-use \OAuth\ServiceFactory;
-use \OAuth\Common\Storage\SymfonySession;
+use Illuminate\Support\ServiceProvider;
+use OAuth\ServiceFactory;
+use OAuth\Common\Storage\SymfonySession;
 
 class OAuthServiceProvider extends ServiceProvider {
 

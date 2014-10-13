@@ -1,14 +1,12 @@
 <?php namespace Jenssegers\OAuth;
 
-use \App;
-use \Config;
-use \URL;
-use \OAuth\ServiceFactory;
-use \OAuth\Common\Consumer\Credentials;
-use \OAuth\Common\Storage\TokenStorageInterface;
+use App, Config, URL;
+use OAuth\ServiceFactory;
+use OAuth\Common\Consumer\Credentials;
+use OAuth\Common\Storage\TokenStorageInterface;
 
-class OAuth
-{
+class OAuth {
+
     /**
      * OAuth Service Factory instance.
      *
