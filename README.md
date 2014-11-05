@@ -45,13 +45,9 @@ Supported services
 Installation
 ------------
 
-Add the package to your `composer.json` and run `composer update`.
+Install using composer:
 
-    {
-        "require": {
-            "jenssegers/oauth": "*"
-        }
-    }
+    composer require jenssegers/oauth
 
 Add the service provider in `app/config/app.php`:
 
