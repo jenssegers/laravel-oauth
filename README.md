@@ -3,7 +3,7 @@ Laravel OAuth
 
 [![Build Status](http://img.shields.io/travis/jenssegers/laravel-oauth.svg)](https://travis-ci.org/jenssegers/laravel-oauth) [![Coverage Status](http://img.shields.io/coveralls/jenssegers/laravel-oauth.svg)](https://coveralls.io/r/jenssegers/laravel-oauth)
 
-A Laravel 4 OAuth 1 and 2 library, using [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib). This library shares the Laravel session to store tokens and supports the services configuration file that was introduced in Laravel 4.2.
+A Laravel OAuth 1 and 2 library, using [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib). This library shares the Laravel session to store tokens and supports the services configuration file that was introduced in Laravel.
 
 Supported services
 ------------------
