@@ -21,40 +21,20 @@ class OAuth {
     protected $storage;
 
     /**
-     * The prefix used to get the configuration.
-     *
-     * @var string
-     */
-    protected $prefix = 'services';
-
-    /**
      * Constructor.
      *
      * @param \OAuth\ServiceFactory $factory
      */
-    public function __construct(ServiceFactory $factory, TokenStorageInterface $storage)
+    public function __construct(ServiceFactory $factory, TokenStorageInterface $storage, $httpClient = null)
     {
         // Dependency injection
         $this->factory = $factory;
         $this->storage = $storage;
 
-        // Here we check what consumer configuration file is used before we start.
-        // By default, we will use the Laravel services file, but we will check
-        // other files such as the included package configuration file.
-        if (Config::get('oauth::consumers'))
-        {
-            $this->prefix = 'oauth::consumers';
-        }
-        else if (Config::get('oauth.consumers'))
-        {
-            $this->prefix = 'oauth.consumers';
-        }
-
         // Set HTTP client
-        if ($client = Config::get('oauth.client') ?: Config::get('oauth::client'))
+        if ($httpClient)
         {
-            $class = '\OAuth\Common\Http\Client\\' . $client;
-            $this->factory->setHttpClient(new $class);
+            $this->setHttpClient($httpClient);
         }
     }
 
@@ -70,15 +50,15 @@ class OAuth {
     {
         // Create credentials object.
         $credentials = new Credentials(
-            Config::get($this->prefix . ".$service.client_id"),
-            Config::get($this->prefix . ".$service.client_secret"),
+            Config::get("services.$service.client_id"),
+            Config::get("services.$service.client_secret"),
             $url ?: URL::current()
         );
 
         // Get default scope.
         if (is_null($scope))
         {
-            $scope = Config::get($this->prefix . ".$service.scope", array());
+            $scope = Config::get("services.$service.scope", []);
         }
 
         return $this->factory->createService($service, $credentials, $this->storage, $scope);
@@ -95,6 +75,23 @@ class OAuth {
     public function service($service, $url = null, $scope = null)
     {
         return $this->consumer($service, $url, $scope);
+    }
+
+    /**
+     * Set the HTTP client.
+     *
+     * @param string $client
+     */
+    public function setHttpClient($client)
+    {
+        if ( ! in_array($client, ['StreamClient', 'CurlClient']))
+        {
+            throw new \InvalidArgumentException('Invalid HTTP client');
+        }
+
+        $class = '\OAuth\Common\Http\Client\\' . $client;
+
+        $this->factory->setHttpClient(new $class);
     }
 
     /**

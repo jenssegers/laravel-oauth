@@ -5,14 +5,15 @@ class ServiceProviderTest extends Orchestra\Testbench\TestCase {
     public function tearDown()
     {
         Mockery::close();
+        parent::tearDown();
     }
 
-    protected function getPackageProviders()
+    protected function getPackageProviders($app)
     {
         return array('Jenssegers\OAuth\OAuthServiceProvider');
     }
 
-    protected function getPackageAliases()
+    protected function getPackageAliases($app)
     {
         return array(
             'OAuth' => 'Jenssegers\OAuth\Facades\OAuth'
@@ -27,6 +28,17 @@ class ServiceProviderTest extends Orchestra\Testbench\TestCase {
     public function testFacade()
     {
         $this->assertInstanceOf('Jenssegers\OAuth\OAuth', OAuth::getFacadeRoot());
+    }
+
+    public function testSharesLaravelSession()
+    {
+        $oauth = App::make('oauth');
+        $consumer = $oauth->consumer('facebook');
+        $storage = $consumer->getStorage();
+        $session = $storage->getSession();
+
+        $session->set('foo', 'bar');
+        $this->assertEquals('bar', Session::get('foo'));
     }
 
 }

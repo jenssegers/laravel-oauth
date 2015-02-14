@@ -15,11 +15,11 @@
     ],
     "require": {
         "php": ">=5.4",
-        "illuminate/support": "4.*|5.0.*",
+        "illuminate/support": "4.*|5.*",
         "lusitanian/oauth": "~0.3"
     },
     "require-dev": {
-        "orchestra/testbench": "2.2.*",
+        "orchestra/testbench": "3.0.*",
         "mockery/mockery": "*",
         "satooshi/php-coveralls": "*"
     },
