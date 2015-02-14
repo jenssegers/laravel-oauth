@@ -1,9 +1,8 @@
 <?php
 
-use Jenssegers\OAuth\OAuth;
-use OAuth\Common\Storage\Memory;
+use Jenssegers\OAuth\Factory;
 
-class OAuthProviderTest extends Orchestra\Testbench\TestCase {
+class OAuthTest extends Orchestra\Testbench\TestCase {
 
     public function tearDown()
     {
@@ -13,91 +12,134 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
 
     protected function getPackageProviders($app)
     {
-        return array('Jenssegers\OAuth\OAuthServiceProvider');
+        return ['Jenssegers\OAuth\OAuthServiceProvider'];
     }
 
     protected function getPackageAliases($app)
     {
-        return array(
-            'OAuth' => 'Jenssegers\OAuth\Facades\OAuth'
-        );
+        return ['OAuth' => 'Jenssegers\OAuth\Facades\OAuth'];
     }
 
-    public function testSetsHttpClient()
+    public function testCreatesOAuth2Consumers()
     {
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
-        $serviceFactory->shouldReceive('setHttpClient')->with(Mockery::type('OAuth\\Common\\Http\\Client\\CurlClient'))->times(1);
+        $oauth = new Factory;
+        $consumers = ['Eventbrite', 'Facebook', 'Github', 'Google', 'Instagram', 'Linkedin', 'Microsoft', 'Vkontakte'];
 
-        $oauth = new OAuth($serviceFactory, new Memory);
-        $oauth->setHttpClient('CurlClient');
+        foreach ($consumers as $consumer)
+        {
+            Config::set('services.' . strtolower($consumer) . '.clientId', uniqid());
+            Config::set('services.' . strtolower($consumer) . '.clientSecret', md5(uniqid()));
+
+            $instance = $oauth->consumer($consumer);
+            $this->assertInstanceOf("League\OAuth2\Client\Provider\\$consumer", $instance);
+        }
     }
 
-    public function testInvalidHttpClient()
+    public function testCreatesOAuth1Consumers()
     {
-        $this->setExpectedException('InvalidArgumentException', 'Invalid HTTP client');
+        $oauth = new Factory;
+        $consumers = ['Bitbucket', 'Trello', 'Tumblr', 'Twitter'];
 
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
-        $oauth = new OAuth($serviceFactory, new Memory);
-        $oauth->setHttpClient('FooBarClient');
+        foreach ($consumers as $consumer)
+        {
+            Config::set('services.' . strtolower($consumer) . '.identifier', uniqid());
+            Config::set('services.' . strtolower($consumer) . '.secret', md5(uniqid()));
+
+            $instance = $oauth->consumer($consumer);
+            $this->assertInstanceOf("League\OAuth1\Client\Server\\$consumer", $instance);
+        }
     }
 
-    public function testDefaultHttpClient()
+    public function testOAuth2ConfigScopes()
     {
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
-        $serviceFactory->shouldReceive('setHttpClient')->times(0);
+        Config::set('services.facebook.clientId', uniqid());
+        Config::set('services.facebook.clientSecret', md5(uniqid()));
+        Config::set('services.facebook.scopes', ['public_profile', 'email']);
 
-        $oauth = new OAuth($serviceFactory, new Memory);
+        $oauth = new Factory;
+        $facebook = $oauth->consumer('facebook');
+
+        $this->assertEquals(['public_profile', 'email'], $facebook->scopes);
     }
 
-    public function testCreatesConsumer()
+    public function testOAuth2OverrideScopes()
     {
-        Config::set('services.facebook.client_id', '123');
-        Config::set('services.facebook.client_secret', 'ABC');
+        Config::set('services.facebook.clientId', uniqid());
+        Config::set('services.facebook.clientSecret', md5(uniqid()));
+        Config::set('services.facebook.scopes', ['public_profile', 'email']);
 
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory[createService]');
-        $serviceFactory->shouldReceive('createService')->passthru();
+        $oauth = new Factory;
+        $facebook = $oauth->consumer('facebook', null, ['email', 'user_friends']);
 
-        $oauth = new OAuth($serviceFactory, new Memory);
-        $consumer = $oauth->consumer('facebook');
-        $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
+        $this->assertEquals(['email', 'user_friends'], $facebook->scopes);
     }
 
-    public function testReturnsConsumer()
+    public function testOAuth2DefaultRedirectUri()
     {
-        Config::set('services.facebook.client_id', '123');
-        Config::set('services.facebook.client_secret', 'ABC');
-        Config::set('services.facebook.scope', array());
+        Config::set('services.facebook.clientId', uniqid());
+        Config::set('services.facebook.clientSecret', md5(uniqid()));
 
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
-        $serviceFactory->shouldReceive('createService')->passthru();
-        $oauth = new OAuth($serviceFactory, new Memory);
+        $oauth = new Factory;
+        $facebook = $oauth->consumer('facebook');
 
-        $consumer = $oauth->consumer('facebook', 'foo.bar.com', array('email', 'publish_actions'));
-        $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
-
-        $uri = (string) $consumer->getAuthorizationUri();
-        $this->assertContains('client_id=123', $uri);
-        $this->assertContains('redirect_uri=foo.bar.com', $uri);
-        $this->assertContains('scope=email+publish_actions', $uri);
+        $this->assertEquals(URL::current(), $facebook->redirectUri);
     }
 
-    public function testReturnsDefaultConsumer()
+    public function testOAuth2CustomRedirectUri()
     {
-        Config::set('services.facebook.client_id', '123');
-        Config::set('services.facebook.client_secret', 'ABC');
-        Config::set('services.facebook.scope', array('email', 'publish_actions'));
+        Config::set('services.facebook.clientId', uniqid());
+        Config::set('services.facebook.clientSecret', md5(uniqid()));
 
-        $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
-        $serviceFactory->shouldReceive('createService')->passthru();
-        $oauth = new OAuth($serviceFactory, new Memory);
+        $oauth = new Factory;
+        $facebook = $oauth->consumer('facebook', 'http://example.com/callback');
 
-        $consumer = $oauth->consumer('facebook');
-        $this->assertInstanceOf('OAuth\OAuth2\Service\Facebook', $consumer);
+        $this->assertEquals('http://example.com/callback', $facebook->redirectUri);
+    }
 
-        $uri = (string) $consumer->getAuthorizationUri();
-        $this->assertContains('client_id=123', $uri);
-        $this->assertContains('redirect_uri=' . urlencode(URL::current()), $uri);
-        $this->assertContains('scope=email+publish_actions', $uri);
+    public function testOAuth1ConfigScopes()
+    {
+        Config::set('services.trello.identifier', uniqid());
+        Config::set('services.trello.secret', md5(uniqid()));
+        Config::set('services.trello.scope', ['read', 'write']);
+
+        $oauth = new Factory;
+        $trello = $oauth->consumer('trello');
+
+        $this->assertEquals('read,write', $trello->getApplicationScope());
+    }
+
+    public function testOAuth1OverrideScopes()
+    {
+        Config::set('services.trello.identifier', uniqid());
+        Config::set('services.trello.secret', md5(uniqid()));
+        Config::set('services.trello.scope', ['read']);
+
+        $oauth = new Factory;
+        $trello = $oauth->consumer('trello', null, ['read', 'write']);
+
+        $this->assertEquals('read,write', $trello->getApplicationScope());
+    }
+
+    public function testOAuth1DefaultRedirectUri()
+    {
+        Config::set('services.twitter.identifier', uniqid());
+        Config::set('services.twitter.secret', md5(uniqid()));
+
+        $oauth = new Factory;
+        $twitter = $oauth->consumer('twitter');
+
+        $this->assertEquals(URL::current(), $twitter->getClientCredentials()->getCallbackUri());
+    }
+
+    public function testOAuth1CustomRedirectUri()
+    {
+        Config::set('services.twitter.identifier', uniqid());
+        Config::set('services.twitter.secret', md5(uniqid()));
+
+        $oauth = new Factory;
+        $twitter = $oauth->consumer('twitter', 'http://example.com/callback');
+
+        $this->assertEquals('http://example.com/callback', $twitter->getClientCredentials()->getCallbackUri());
     }
 
 }

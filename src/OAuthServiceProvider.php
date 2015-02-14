@@ -1,8 +1,6 @@
 <?php namespace Jenssegers\OAuth;
 
 use Illuminate\Support\ServiceProvider;
-use OAuth\ServiceFactory;
-use OAuth\Common\Storage\SymfonySession;
 
 class OAuthServiceProvider extends ServiceProvider {
 
@@ -25,12 +23,7 @@ class OAuthServiceProvider extends ServiceProvider {
     {
         $this->app->bindShared('oauth', function($app)
         {
-            $factory = new ServiceFactory;
-
-            $session = $app->make('session')->driver();
-            $storage = new SymfonySession($session);
-
-            return new OAuth($factory, $storage);
+            return new Factory($factory, $storage);
         });
     }
 }

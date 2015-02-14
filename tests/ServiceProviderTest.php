@@ -22,23 +22,12 @@ class ServiceProviderTest extends Orchestra\Testbench\TestCase {
 
     public function testBind()
     {
-        $this->assertInstanceOf('Jenssegers\OAuth\OAuth', $this->app['oauth']);
+        $this->assertInstanceOf('Jenssegers\OAuth\Factory', $this->app['oauth']);
     }
 
     public function testFacade()
     {
-        $this->assertInstanceOf('Jenssegers\OAuth\OAuth', OAuth::getFacadeRoot());
-    }
-
-    public function testSharesLaravelSession()
-    {
-        $oauth = App::make('oauth');
-        $consumer = $oauth->consumer('facebook');
-        $storage = $consumer->getStorage();
-        $session = $storage->getSession();
-
-        $session->set('foo', 'bar');
-        $this->assertEquals('bar', Session::get('foo'));
+        $this->assertInstanceOf('Jenssegers\OAuth\Factory', OAuth::getFacadeRoot());
     }
 
 }
