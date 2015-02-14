@@ -31,6 +31,7 @@ Supported services
     - Harvest
     - Heroku
     - Instagram
+    - Jawbone UP
     - LinkedIn
     - Mailchimp
     - Microsoft
@@ -39,6 +40,8 @@ Supported services
     - Reddit
     - RunKeeper
     - SoundCloud
+    - Spotify
+    - Ustream
     - Vkontakte
     - Yammer
 
@@ -60,35 +63,13 @@ Add the OAuth alias to `app/config/app.php`:
 Configuration
 -------------
 
-### Option 1: Services configuration file
+This package supports configuration through the services configuration file located in `config/services.php`:
 
-This package supports configuration through the services configuration file located in `app/config/services.php`:
-
-    'facebook' => array(
-        'client_id'     => '',
-        'client_secret' => '',
-        'scope'         => array(),
-    )
-
-### Option 2: The package configuration file
-
-Publish the included configuration file:
-
-    php artisan config:publish jenssegers/oauth
-
-Add your consumer credentials to the configuration file:
-
-    'consumers' => array(
-
-        'facebook' => array(
-            'client_id'     => '',
-            'client_secret' => '',
-            'scope'         => array(),
-        )
-
-    )
-
-**Optional:** You can also create a `config/oauth.php` file for your consumer configuration. When the library is loaded for the first time, it will check if that file is present or not.
+    'facebook' => [
+        'client_id'     => 'your-client-id',
+        'client_secret' => 'your-client-secret',
+        'scope'         => [],
+    ]
 
 Usage
 -----
@@ -99,7 +80,7 @@ Once you have added your credentials, you can create PHPoAuthLib service objects
 
 To override the default redirect url, or scope use:
 
-    $oauth = OAuth::consumer('facebook', URL::to('url'), array('email', 'publish_actions'));
+    $oauth = OAuth::consumer('facebook', URL::to('url'), ['email', 'publish_actions']);
 
 Once you have the service object, you can use it to interact with the service's API. For more information check out [PHPoAuthLib](https://github.com/Lusitanian/PHPoAuthLib).
 
