@@ -50,29 +50,32 @@ class OAuth {
      */
     public function consumer($service, $url = null, $scope = null, $baseUri = null, $version = null)
     {
+        // Get service configuration
+        $config = Config::get('services.' . strtolower($service));
+
         // Create credentials object.
         $credentials = new Credentials(
-            Config::get("services.$service.client_id"),
-            Config::get("services.$service.client_secret"),
+            array_get($config, 'client_id'),
+            array_get($config, 'client_secret'),
             $url ?: URL::current()
         );
 
         // Get default scope.
         if (is_null($scope))
         {
-            $scope = Config::get("services.$service.scope", []);
+            $scope = array_get($config, 'scope', []);
         }
 
         // Get default base uri.
         if (is_null($baseUri))
         {
-            $baseUri = Config::get("services.$service.baseUri", null);
+            $baseUri = array_get($config, 'baseUri');
         }
 
         // Get default api version.
         if (is_null($version))
         {
-            $version = Config::get("services.$service.version", '');
+            $version = array_get($config, 'version', '');
         }
 
         return $this->factory->createService($service, $credentials, $this->storage, $scope, $baseUri, $version);
