@@ -53,6 +53,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
     {
         Config::set('services.facebook.client_id', '123');
         Config::set('services.facebook.client_secret', 'ABC');
+        Config::set('services.facebook.version', 'v2.2');
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory[createService]');
         $serviceFactory->shouldReceive('createService')->passthru();
@@ -67,6 +68,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         Config::set('services.facebook.client_id', '123');
         Config::set('services.facebook.client_secret', 'ABC');
         Config::set('services.facebook.scope', array());
+        Config::set('services.facebook.version', 'v2.2');
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('createService')->passthru();
@@ -79,6 +81,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         $this->assertContains('client_id=123', $uri);
         $this->assertContains('redirect_uri=foo.bar.com', $uri);
         $this->assertContains('scope=email+publish_actions', $uri);
+        $this->assertContains('facebook.com/v2.2/dialog/oauth', $uri);
     }
 
     public function testReturnsDefaultConsumer()
@@ -86,6 +89,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         Config::set('services.facebook.client_id', '123');
         Config::set('services.facebook.client_secret', 'ABC');
         Config::set('services.facebook.scope', array('email', 'publish_actions'));
+        Config::set('services.facebook.version', 'v2.2');
 
         $serviceFactory = Mockery::mock('OAuth\ServiceFactory');
         $serviceFactory->shouldReceive('createService')->passthru();
@@ -98,6 +102,7 @@ class OAuthProviderTest extends Orchestra\Testbench\TestCase {
         $this->assertContains('client_id=123', $uri);
         $this->assertContains('redirect_uri=' . urlencode(URL::current()), $uri);
         $this->assertContains('scope=email+publish_actions', $uri);
+        $this->assertContains('facebook.com/v2.2/dialog/oauth', $uri);
     }
 
 }

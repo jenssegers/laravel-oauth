@@ -16,7 +16,7 @@
     "require": {
         "php": ">=5.4",
         "illuminate/support": "4.*|5.*",
-        "lusitanian/oauth": "~0.3"
+        "lusitanian/oauth": "*"
     },
     "require-dev": {
         "orchestra/testbench": "3.0.*",
@@ -27,5 +27,6 @@
         "psr-4": {
             "Jenssegers\\OAuth\\": "src/"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }

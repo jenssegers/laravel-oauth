@@ -44,9 +44,11 @@ class OAuth {
      * @param  string $service
      * @param  string $url
      * @param  array  $scope
+     * @param  string $baseUri
+     * @param  string $version
      * @return \OAuth\Common\Service\AbstractService
      */
-    public function consumer($service, $url = null, $scope = null)
+    public function consumer($service, $url = null, $scope = null, $baseUri = null, $version = null)
     {
         // Create credentials object.
         $credentials = new Credentials(
@@ -61,7 +63,19 @@ class OAuth {
             $scope = Config::get("services.$service.scope", []);
         }
 
-        return $this->factory->createService($service, $credentials, $this->storage, $scope);
+        // Get default base uri.
+        if (is_null($baseUri))
+        {
+            $baseUri = Config::get("services.$service.baseUri", null);
+        }
+
+        // Get default api version.
+        if (is_null($version))
+        {
+            $version = Config::get("services.$service.version", '');
+        }
+
+        return $this->factory->createService($service, $credentials, $this->storage, $scope, $baseUri, $version);
     }
 
     /**
@@ -70,11 +84,13 @@ class OAuth {
      * @param  string $service
      * @param  string $url
      * @param  array  $scope
+     * @param  string $baseUri
+     * @param  string $version
      * @return \OAuth\Common\Service\AbstractService
      */
-    public function service($service, $url = null, $scope = null)
+    public function service($service, $url = null, $scope = null, $baseUri = null, $version = nul)
     {
-        return $this->consumer($service, $url, $scope);
+        return $this->consumer($service, $url, $scope, $baseUri, $version);
     }
 
     /**
