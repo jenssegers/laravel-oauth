@@ -88,7 +88,7 @@ class OAuth {
      * @param  string $version
      * @return \OAuth\Common\Service\AbstractService
      */
-    public function service($service, $url = null, $scope = null, $baseUri = null, $version = nul)
+    public function service($service, $url = null, $scope = null, $baseUri = null, $version = null)
     {
         return $this->consumer($service, $url, $scope, $baseUri, $version);
     }
