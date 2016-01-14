@@ -1,8 +1,8 @@
 {
-    "name": "jenssegers/oauth",
+    "name": "cotcotquedec/laravel-oauth",
     "description": "Laravel OAuth library based on Lusitanian/PHPoAuthLib",
     "keywords": ["oauth", "laravel"],
-    "homepage": "https://github.com/jenssegers/laravel-oauth",
+    "homepage": "https://github.com/cotcotquedec/laravel-oauth",
     "license": "MIT",
     "authors": [
         {
